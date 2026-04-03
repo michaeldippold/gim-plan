@@ -149,6 +149,32 @@
       color: #4a4d6a;
       text-decoration: line-through;
     }
+
+    @media (max-width: 630px) {
+      html, body {
+        height: auto;
+        overflow: auto;
+      }
+
+      body {
+        display: block;
+      }
+
+      .columns {
+        min-height: unset;
+      }
+
+      .section {
+        display: block;
+        min-height: unset;
+      }
+
+      .items {
+        overflow-y: visible;
+        flex: unset;
+        min-height: unset;
+      }
+    }
   </style>
 </head>
 <body>
