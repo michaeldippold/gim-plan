@@ -7,29 +7,38 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       background: #14161f;
       color: #c8cfe8;
       font-family: 'Segoe UI', system-ui, sans-serif;
       font-size: 15px;
       line-height: 1.5;
-      padding: 32px 24px;
-      min-height: 100vh;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
     }
 
     h1 {
       font-size: 1.6rem;
       color: #a89ee0;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
       letter-spacing: 0.05em;
       border-bottom: 1px solid #2a2d42;
       padding-bottom: 12px;
+      flex-shrink: 0;
     }
 
     .columns {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 24px;
+      flex: 1;
+      min-height: 0;
     }
 
     .section {
@@ -37,6 +46,9 @@
       border: 1px solid #2a2d42;
       border-radius: 6px;
       padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     .section h2 {
@@ -45,9 +57,41 @@
       color: #8b80d0;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 10px;
       padding-bottom: 8px;
       border-bottom: 1px solid #2a2d42;
+      flex-shrink: 0;
+    }
+
+    .progress {
+      font-size: 0.78rem;
+      color: #4a4d6a;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .progress span {
+      color: #8b80d0;
+      font-weight: 600;
+    }
+
+    .items {
+      overflow-y: auto;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .items::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .items::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .items::-webkit-scrollbar-thumb {
+      background: #2a2d42;
+      border-radius: 3px;
     }
 
     .item {
@@ -105,17 +149,6 @@
       color: #4a4d6a;
       text-decoration: line-through;
     }
-
-    .progress {
-      font-size: 0.78rem;
-      color: #4a4d6a;
-      margin-bottom: 14px;
-    }
-
-    .progress span {
-      color: #8b80d0;
-      font-weight: 600;
-    }
   </style>
 </head>
 <body>
@@ -140,6 +173,9 @@
         "Witch's Potion (magic xp)",
         "Misthalin Mystery (crafting xp)",
         "Murder Mystery (crafting xp)",
+        "Goblin Diplomacy",
+        "Earnest the Chicken",
+        "Doric's Quest",
         "Merlin's Crystal",
         "Priest in Peril",
         "Making History",
