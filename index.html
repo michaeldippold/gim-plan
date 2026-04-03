@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RS TODO</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #14161f;
+      color: #c8cfe8;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      padding: 32px 24px;
+      min-height: 100vh;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #a89ee0;
+      margin-bottom: 32px;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #2a2d42;
+      padding-bottom: 12px;
+    }
+
+    .columns {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .section {
+      background: #1c1f2e;
+      border: 1px solid #2a2d42;
+      border-radius: 6px;
+      padding: 20px 24px;
+    }
+
+    .section h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #8b80d0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2a2d42;
+    }
+
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 6px 0;
+      border-bottom: 1px solid #22253a;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      border: 1px solid #4a4d70;
+      border-radius: 3px;
+      background: #14161f;
+      cursor: pointer;
+      margin-top: 2px;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+    }
+
+    .item input[type="checkbox"]:checked {
+      background: #4a3a9a;
+      border-color: #7060c0;
+    }
+
+    .item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #c8b8f8;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .item label {
+      cursor: pointer;
+      flex: 1;
+      transition: color 0.15s, text-decoration 0.15s;
+    }
+
+    .item input[type="checkbox"]:checked + label {
+      color: #4a4d6a;
+      text-decoration: line-through;
+    }
+
+    .progress {
+      font-size: 0.78rem;
+      color: #4a4d6a;
+      margin-bottom: 14px;
+    }
+
+    .progress span {
+      color: #8b80d0;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Runescape TODO</h1>
+
+<div class="columns" id="app"></div>
+
+<script>
+  const data = [
+    {
+      id: "quests",
+      title: "Quests",
+      items: [
+        "Waterfall Quest",
+        "Witch's House",
+        "Children of the Sun",
+        "Misthalin Mystery (crafting xp)",
+        "Murder Mystery (crafting xp)",
+        "Witch's Potion (magic xp)",
+        "Imp Catcher (magic xp)",
+        "The Grand Tree (transport + magic xp)",
+        "Tree Gnome Village (transport)",
+        "Making History",
+        "Priest in Peril",
+        "Ghosts Ahoy",
+        "Merlin's Crystal",
+        "Holy Grail",
+        "Lost City",
+        "Nature Spirit",
+        "The Restless Ghost",
+        "Fairytale I - Growing Pains",
+        "Start Fairytale II (fairy ring transport)",
+      ]
+    },
+    {
+      id: "diaries",
+      title: "Achievement Diaries",
+      items: [
+        "Ardougne Easy (transport)",
+        "Varrock Easy (mining armor)",
+      ]
+    },
+    {
+      id: "skills",
+      title: "Skill Goals",
+      items: [
+        "Crafting 30",
+        "Magic 30",
+      ]
+    },
+    {
+      id: "crafting",
+      title: "Crafting Goals",
+      items: [
+        "Rings of Dueling",
+        "Games Necklaces",
+      ]
+    },
+  ];
+
+  function getState(sectionId) {
+    try {
+      return JSON.parse(localStorage.getItem("rs-todo-" + sectionId) || "{}");
+    } catch { return {}; }
+  }
+
+  function saveState(sectionId, state) {
+    localStorage.setItem("rs-todo-" + sectionId, JSON.stringify(state));
+  }
+
+  function renderSection(section) {
+    const state = getState(section.id);
+    const checked = section.items.filter((_, i) => state[i]).length;
+
+    const el = document.createElement("div");
+    el.className = "section";
+    el.innerHTML = `
+      <h2>${section.title}</h2>
+      <div class="progress"><span>${checked}/${section.items.length}</span> complete</div>
+      <div class="items"></div>
+    `;
+
+    const itemsEl = el.querySelector(".items");
+    const progressEl = el.querySelector(".progress span");
+
+    section.items.forEach((text, i) => {
+      const row = document.createElement("div");
+      row.className = "item";
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = `${section.id}-${i}`;
+      cb.checked = !!state[i];
+
+      const label = document.createElement("label");
+      label.htmlFor = cb.id;
+      label.textContent = text;
+
+      cb.addEventListener("change", () => {
+        const s = getState(section.id);
+        s[i] = cb.checked;
+        saveState(section.id, s);
+        const total = section.items.filter((_, j) => getState(section.id)[j]).length;
+        progressEl.textContent = `${total}/${section.items.length}`;
+      });
+
+      row.appendChild(cb);
+      row.appendChild(label);
+      itemsEl.appendChild(row);
+    });
+
+    return el;
+  }
+
+  const app = document.getElementById("app");
+  data.forEach(section => app.appendChild(renderSection(section)));
+</script>
+
+</body>
+</html>
