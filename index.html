@@ -94,6 +94,18 @@
       border-radius: 3px;
     }
 
+    /* Completed subsection header */
+    .completed-divider {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #7a6a30;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 14px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #3a3010;
+    }
+
     .item {
       display: flex;
       align-items: flex-start;
@@ -106,6 +118,7 @@
       border-bottom: none;
     }
 
+    /* --- Standard checkbox --- */
     .item input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
@@ -150,6 +163,32 @@
       text-decoration: line-through;
     }
 
+    /* --- Permanently completed item --- */
+    .item.done input[type="checkbox"] {
+      background: #2a2010;
+      border-color: #7a6020;
+      cursor: default;
+    }
+
+    .item.done input[type="checkbox"]::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 1px;
+      width: 5px;
+      height: 9px;
+      border: 2px solid #c8a040;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .item.done label {
+      color: #6a5a28;
+      text-decoration: line-through;
+      cursor: default;
+    }
+
     @media (max-width: 630px) {
       html, body {
         height: auto;
@@ -189,72 +228,72 @@
       id: "quests",
       title: "Quests",
       items: [
-        "Waterfall Quest",
-        "Witch's House",
-        "Children of the Sun",
-        "Plague City (Ardy 1 diary)",
-        "Biohazard (Ardy 1 diary)",
-        "The Restless Ghost",
-        "Imp Catcher (magic xp)",
-        "Witch's Potion (magic xp)",
-        "Misthalin Mystery (crafting xp)",
-        "Murder Mystery (crafting xp)",
-        "Goblin Diplomacy",
-        "Earnest the Chicken",
-        "Doric's Quest",
-        "Merlin's Crystal",
-        "Priest in Peril",
-        "Making History",
-        "Nature Spirit",
-        "Ghosts Ahoy",
-        "Holy Grail",
-        "Tree Gnome Village (transport)",
-        "The Grand Tree (transport + magic xp)",
-        "Lost City (need 31 Crafting / 36 Woodcutting)",
-        "Fairytale I \u2014 Growing Pains",
-        "Start Fairytale II (fairy ring transport)",
+        { text: "Waterfall Quest", done: false },
+        { text: "Witch's House", done: false },
+        { text: "Children of the Sun", done: false },
+        { text: "Plague City (Ardy 1 diary)", done: false },
+        { text: "Biohazard (Ardy 1 diary)", done: false },
+        { text: "The Restless Ghost", done: false },
+        { text: "Imp Catcher (magic xp)", done: false },
+        { text: "Witch's Potion (magic xp)", done: false },
+        { text: "Misthalin Mystery (crafting xp)", done: false },
+        { text: "Murder Mystery (crafting xp)", done: false },
+        { text: "Goblin Diplomacy", done: false },
+        { text: "Earnest the Chicken", done: false },
+        { text: "Doric's Quest", done: false },
+        { text: "Merlin's Crystal", done: false },
+        { text: "Priest in Peril", done: false },
+        { text: "Making History", done: false },
+        { text: "Nature Spirit", done: false },
+        { text: "Ghosts Ahoy", done: false },
+        { text: "Holy Grail", done: false },
+        { text: "Tree Gnome Village (transport)", done: false },
+        { text: "The Grand Tree (transport + magic xp)", done: false },
+        { text: "Lost City (need 31 Crafting / 36 Woodcutting)", done: false },
+        { text: "Fairytale I \u2014 Growing Pains", done: false },
+        { text: "Start Fairytale II (fairy ring transport)", done: false },
       ]
     },
     {
       id: "diaries",
       title: "Achievement Diaries",
       items: [
-        "Ardougne Easy (transport)",
-        "Varrock Easy (mining armor)",
+        { text: "Ardougne Easy (transport)", done: false },
+        { text: "Varrock Easy (mining armor)", done: false },
       ]
     },
     {
       id: "skills",
       title: "Skill Goals",
       items: [
-        "Crafting 30",
-        "Magic 30",
+        { text: "Crafting 30", done: false },
+        { text: "Magic 30", done: false },
       ]
     },
     {
       id: "crafting",
       title: "Crafting Goals",
       items: [
-        "Rings of Dueling",
-        "Games Necklaces",
+        { text: "Rings of Dueling", done: false },
+        { text: "Games Necklaces", done: false },
       ]
     },
     {
       id: "gear",
       title: "Gear",
       items: [
-        "Zammy Monk Top",
-        "Zammy Monk Bottom",
-        "Climbing Boots",
-        "Boots of Lightness",
+        { text: "Zammy Monk Top", done: false },
+        { text: "Zammy Monk Bottom", done: false },
+        { text: "Climbing Boots", done: false },
+        { text: "Boots of Lightness", done: false },
       ]
     },
     {
       id: "miniquests",
       title: "Miniquests",
       items: [
-        "Daddy's Home",
-        "Varrock Museum Quiz",
+        { text: "Daddy's Home", done: false },
+        { text: "Varrock Museum Quiz", done: false },
       ]
     },
   ];
@@ -271,20 +310,26 @@
 
   function renderSection(section) {
     const state = getState(section.id);
-    const checked = section.items.filter((_, i) => state[i]).length;
+
+    const pending = section.items.filter(item => !item.done);
+    const completed = section.items.filter(item => item.done);
+
+    // Progress counts only pending items (done ones are already off the board)
+    const checkedCount = pending.filter((item, i) => state[i]).length;
 
     const el = document.createElement("div");
     el.className = "section";
     el.innerHTML = `
       <h2>${section.title}</h2>
-      <div class="progress"><span>${checked}/${section.items.length}</span> complete</div>
+      <div class="progress"><span>${checkedCount}/${pending.length}</span> complete</div>
       <div class="items"></div>
     `;
 
     const itemsEl = el.querySelector(".items");
     const progressEl = el.querySelector(".progress span");
 
-    section.items.forEach((text, i) => {
+    // Render pending items
+    pending.forEach((item, i) => {
       const row = document.createElement("div");
       row.className = "item";
 
@@ -295,20 +340,47 @@
 
       const label = document.createElement("label");
       label.htmlFor = cb.id;
-      label.textContent = text;
+      label.textContent = item.text;
 
       cb.addEventListener("change", () => {
         const s = getState(section.id);
         s[i] = cb.checked;
         saveState(section.id, s);
-        const total = section.items.filter((_, j) => getState(section.id)[j]).length;
-        progressEl.textContent = `${total}/${section.items.length}`;
+        const total = pending.filter((_, j) => getState(section.id)[j]).length;
+        progressEl.textContent = `${total}/${pending.length}`;
       });
 
       row.appendChild(cb);
       row.appendChild(label);
       itemsEl.appendChild(row);
     });
+
+    // Render completed items under a divider
+    if (completed.length > 0) {
+      const divider = document.createElement("div");
+      divider.className = "completed-divider";
+      divider.textContent = "Completed";
+      itemsEl.appendChild(divider);
+
+      completed.forEach((item, i) => {
+        const row = document.createElement("div");
+        row.className = "item done";
+
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = `${section.id}-done-${i}`;
+        cb.checked = true;
+        cb.addEventListener("click", e => e.preventDefault()); // non-interactive
+
+        const label = document.createElement("label");
+        label.htmlFor = cb.id;
+        label.textContent = item.text;
+
+        row.appendChild(cb);
+        row.appendChild(label);
+        itemsEl.appendChild(row);
+      });
+    }
 
     return el;
   }
