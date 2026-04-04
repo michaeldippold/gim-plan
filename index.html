@@ -28,24 +28,30 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
+      gap: 24px;
       margin-bottom: 20px;
       padding-bottom: 12px;
       border-bottom: 1px solid #2a2d42;
       flex-shrink: 0;
     }
 
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
     h1 {
       font-size: 1.6rem;
       color: #a89ee0;
       letter-spacing: 0.05em;
+      white-space: nowrap;
     }
 
     .header-links {
       display: flex;
       gap: 8px;
       align-items: center;
-      flex-shrink: 0;
     }
 
     .header-links a {
@@ -66,6 +72,55 @@
       border-color: #5a50a0;
       color: #c8b8f8;
       background: #22253a;
+    }
+
+    /* ── Header legend (key) ── */
+    .header-legend {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.72rem;
+      color: #4a4d6a;
+      letter-spacing: 0.03em;
+    }
+
+    .legend-box {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      border: 1px solid;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .legend-box.legend-complete {
+      background: #2a2010;
+      border-color: #7a6020;
+    }
+
+    .legend-box.legend-complete::after {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 0px;
+      width: 4px;
+      height: 7px;
+      border: 1.5px solid #c8a040;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+
+    .legend-box.legend-priority {
+      background: #14161f;
+      border-color: hotpink;
     }
 
     /* ── Grid ── */
@@ -263,12 +318,14 @@
 
     .item.done .skill-icon { opacity: 0.4; }
 
-    /* Priority star — sits at far right end of the row */
-    .priority-mark {
-      color: #8b80d0;
-      font-size: 0.65em;
-      flex-shrink: 0;
-      margin-top: 4px;
+    /* Priority items — hotpink border on the checkbox */
+    .item.priority input[type="checkbox"] {
+      border-color: hotpink;
+    }
+
+    .item.priority input[type="checkbox"]:checked {
+      background: #4a3a9a;
+      border-color: hotpink;
     }
 
     /* ── Two-column items grid (skills) ── */
@@ -298,10 +355,22 @@
 <body>
 
 <div class="header">
-  <h1>Runescape TODO</h1>
-  <div class="header-links">
-    <a href="https://ladlorchart.com/" target="_blank" rel="noopener">Laldor Chart</a>
-    <a href="https://oldschool.runescape.wiki/w/Quests/List" target="_blank" rel="noopener">Quest List</a>
+  <div class="header-left">
+    <h1>Runescape TODO</h1>
+    <div class="header-links">
+      <a href="https://ladlorchart.com/" target="_blank" rel="noopener">Laldor Chart</a>
+      <a href="https://oldschool.runescape.wiki/w/Quests/List" target="_blank" rel="noopener">Quest List</a>
+    </div>
+  </div>
+  <div class="header-legend">
+    <div class="legend-item">
+      <div class="legend-box legend-complete"></div>
+      <span>Complete</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-box legend-priority"></div>
+      <span>Priority</span>
+    </div>
   </div>
 </div>
 
@@ -483,7 +552,8 @@
 
     function makeRow(item, cb, isDone) {
       const row = document.createElement("div");
-      row.className = isDone ? "item done" : "item";
+      const base = isDone ? "item done" : "item";
+      row.className = item.priority ? base + " priority" : base;
 
       row.appendChild(cb);
 
@@ -500,14 +570,6 @@
       label.htmlFor = cb.id;
       label.textContent = item.text;
       row.appendChild(label);
-
-      // Star goes at the far right, outside the label, so it never affects text indent
-      if (item.priority) {
-        const star = document.createElement("span");
-        star.className = "priority-mark";
-        star.textContent = "★";
-        row.appendChild(star);
-      }
 
       return row;
     }
