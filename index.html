@@ -357,6 +357,8 @@
 
     /* ── Mobile: single column ── */
     @media (max-width: 630px) {
+      .header { flex-wrap: wrap; gap: 12px; }
+      .header-legend { display: none; }
       .columns { grid-template-columns: 1fr; }
       .items.two-col { grid-template-columns: 1fr; }
     }
