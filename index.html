@@ -23,24 +23,94 @@
       flex-direction: column;
     }
 
-    h1 {
-      font-size: 1.6rem;
-      color: #a89ee0;
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
       margin-bottom: 20px;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid #2a2d42;
       padding-bottom: 12px;
+      border-bottom: 1px solid #2a2d42;
       flex-shrink: 0;
     }
 
+    h1 {
+      font-size: 1.6rem;
+      color: #a89ee0;
+      letter-spacing: 0.05em;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .header-links a {
+      display: inline-block;
+      padding: 5px 12px;
+      border: 1px solid #2a2d42;
+      border-radius: 4px;
+      background: #1c1f2e;
+      color: #8b80d0;
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .header-links a:hover {
+      border-color: #5a50a0;
+      color: #c8b8f8;
+      background: #22253a;
+    }
+
+    /* ── Grid ── */
     .columns {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 24px;
       flex: 1;
       min-height: 0;
     }
 
+    /* ── Column group wrapper (one grid cell) ── */
+    .col-group {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    /* Single section: section stretches to fill the group, items scroll inside */
+    .col-group.single .section {
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Stacked sections: group itself scrolls, sections size by content */
+    .col-group.stacked {
+      overflow-y: auto;
+    }
+
+    .col-group.stacked::-webkit-scrollbar { width: 6px; }
+    .col-group.stacked::-webkit-scrollbar-track { background: transparent; }
+    .col-group.stacked::-webkit-scrollbar-thumb { background: #2a2d42; border-radius: 3px; }
+
+    .col-group.stacked .section {
+      flex: 0 0 auto;
+    }
+
+    .col-group.stacked .items {
+      overflow-y: visible;
+      flex: none;
+      min-height: unset;
+    }
+
+    /* ── Section card ── */
     .section {
       background: #1c1f2e;
       border: 1px solid #2a2d42;
@@ -75,26 +145,18 @@
       font-weight: 600;
     }
 
+    /* ── Items scroll container ── */
     .items {
       overflow-y: auto;
       flex: 1;
       min-height: 0;
     }
 
-    .items::-webkit-scrollbar {
-      width: 6px;
-    }
+    .items::-webkit-scrollbar { width: 6px; }
+    .items::-webkit-scrollbar-track { background: transparent; }
+    .items::-webkit-scrollbar-thumb { background: #2a2d42; border-radius: 3px; }
 
-    .items::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .items::-webkit-scrollbar-thumb {
-      background: #2a2d42;
-      border-radius: 3px;
-    }
-
-    /* Completed subsection header */
+    /* ── Completed subsection header ── */
     .completed-divider {
       font-size: 0.8rem;
       font-weight: 600;
@@ -106,6 +168,7 @@
       border-bottom: 1px solid #3a3010;
     }
 
+    /* ── Item row ── */
     .item {
       display: flex;
       align-items: flex-start;
@@ -114,11 +177,9 @@
       border-bottom: 1px solid #22253a;
     }
 
-    .item:last-child {
-      border-bottom: none;
-    }
+    .item:last-child { border-bottom: none; }
 
-    /* --- Standard checkbox --- */
+    /* Standard checkbox */
     .item input[type="checkbox"] {
       appearance: none;
       -webkit-appearance: none;
@@ -163,7 +224,7 @@
       text-decoration: line-through;
     }
 
-    /* --- Permanently completed item --- */
+    /* Permanently completed item — gold treatment */
     .item.done input[type="checkbox"] {
       background: #2a2010;
       border-color: #7a6020;
@@ -189,111 +250,124 @@
       cursor: default;
     }
 
+    /* ── Mobile: unlock everything and stack naturally ── */
     @media (max-width: 630px) {
-      html, body {
-        height: auto;
-        overflow: auto;
-      }
-
-      body {
-        display: block;
-      }
-
-      .columns {
-        min-height: unset;
-      }
-
-      .section {
-        display: block;
-        min-height: unset;
-      }
-
-      .items {
-        overflow-y: visible;
-        flex: unset;
-        min-height: unset;
-      }
+      html, body { height: auto; overflow: auto; }
+      body { display: block; }
+      .columns { min-height: unset; }
+      .col-group, .col-group.single, .col-group.stacked { overflow-y: visible; min-height: unset; }
+      .section, .col-group.single .section { flex: none; min-height: unset; display: block; }
+      .items, .col-group.stacked .items { overflow-y: visible; flex: none; min-height: unset; }
     }
   </style>
 </head>
 <body>
 
-<h1>Runescape TODO</h1>
+<div class="header">
+  <h1>Runescape TODO</h1>
+  <div class="header-links">
+    <a href="https://ladlorchart.com/" target="_blank" rel="noopener">Laldor Chart</a>
+    <a href="https://oldschool.runescape.wiki/w/Quests/List" target="_blank" rel="noopener">Quest List</a>
+  </div>
+</div>
 
 <div class="columns" id="app"></div>
 
 <script>
-  const data = [
+  // trackTotal: true  → done items count toward the progress total (x / all items)
+  // trackTotal: false → done items vanish from the counter entirely (x / pending only)
+  const columns = [
     {
-      id: "quests",
-      title: "Quests",
-      items: [
-        { text: "Waterfall Quest", done: false },
-        { text: "Witch's House", done: false },
-        { text: "Children of the Sun", done: false },
-        { text: "Plague City (Ardy 1 diary)", done: false },
-        { text: "Biohazard (Ardy 1 diary)", done: false },
-        { text: "The Restless Ghost", done: false },
-        { text: "Imp Catcher (magic xp)", done: false },
-        { text: "Witch's Potion (magic xp)", done: false },
-        { text: "Misthalin Mystery (crafting xp)", done: false },
-        { text: "Murder Mystery (crafting xp)", done: false },
-        { text: "Goblin Diplomacy", done: false },
-        { text: "Earnest the Chicken", done: false },
-        { text: "Doric's Quest", done: false },
-        { text: "Merlin's Crystal", done: false },
-        { text: "Priest in Peril", done: false },
-        { text: "Making History", done: false },
-        { text: "Nature Spirit", done: false },
-        { text: "Ghosts Ahoy", done: false },
-        { text: "Holy Grail", done: false },
-        { text: "Tree Gnome Village (transport)", done: false },
-        { text: "The Grand Tree (transport + magic xp)", done: false },
-        { text: "Lost City (need 31 Crafting / 36 Woodcutting)", done: false },
-        { text: "Fairytale I \u2014 Growing Pains", done: false },
-        { text: "Start Fairytale II (fairy ring transport)", done: false },
+      sections: [
+        {
+          id: "quests", title: "Quests", trackTotal: true,
+          items: [
+            { text: "Waterfall Quest", done: false },
+            { text: "Witch's House", done: false },
+            { text: "Children of the Sun", done: false },
+            { text: "Plague City", done: true },
+            { text: "Biohazard", done: true },
+            { text: "The Restless Ghost", done: false },
+            { text: "Imp Catcher (magic xp)", done: false },
+            { text: "Witch's Potion (magic xp)", done: false },
+            { text: "Misthalin Mystery (crafting xp)", done: false },
+            { text: "Murder Mystery (crafting xp)", done: false },
+            { text: "Goblin Diplomacy", done: false },
+            { text: "Earnest the Chicken", done: false },
+            { text: "Doric's Quest", done: false },
+            { text: "Merlin's Crystal", done: false },
+            { text: "Priest in Peril", done: false },
+            { text: "Making History", done: false },
+            { text: "Nature Spirit", done: false },
+            { text: "Ghosts Ahoy", done: false },
+            { text: "Holy Grail", done: false },
+            { text: "Tree Gnome Village (transport)", done: false },
+            { text: "The Grand Tree (transport + magic xp)", done: false },
+            { text: "Lost City (need 31 Crafting / 36 Woodcutting)", done: false },
+            { text: "Fairytale I \u2014 Growing Pains", done: false },
+            { text: "Start Fairytale II (fairy ring transport)", done: false },
+          ]
+        }
       ]
     },
     {
-      id: "diaries",
-      title: "Achievement Diaries",
-      items: [
-        { text: "Ardougne Easy (transport)", done: false },
-        { text: "Varrock Easy (mining armor)", done: false },
+      sections: [
+        {
+          id: "diaries", title: "Achievement Diaries", trackTotal: true,
+          items: [
+            { text: "Ardougne Easy (transport)", done: true },
+            { text: "Varrock Easy (mining armor)", done: false },
+          ]
+        }
       ]
     },
     {
-      id: "skills",
-      title: "Skill Goals",
-      items: [
-        { text: "Crafting 30", done: false },
-        { text: "Magic 30", done: false },
+      sections: [
+        {
+          id: "skills", title: "Skill Goals", trackTotal: true,
+          items: [
+            { text: "Crafting 30", done: false },
+            { text: "Magic 30", done: false },
+          ]
+        }
       ]
     },
     {
-      id: "crafting",
-      title: "Crafting Goals",
-      items: [
-        { text: "Rings of Dueling", done: false },
-        { text: "Games Necklaces", done: false },
+      sections: [
+        {
+          id: "gear", title: "Gear", trackTotal: false,
+          items: [
+            { text: "Zammy Monk Top", done: false },
+            { text: "Zammy Monk Bottom", done: false },
+            { text: "Climbing Boots", done: false },
+            { text: "Boots of Lightness", done: false },
+          ]
+        }
       ]
     },
     {
-      id: "gear",
-      title: "Gear",
-      items: [
-        { text: "Zammy Monk Top", done: false },
-        { text: "Zammy Monk Bottom", done: false },
-        { text: "Climbing Boots", done: false },
-        { text: "Boots of Lightness", done: false },
-      ]
-    },
-    {
-      id: "miniquests",
-      title: "Miniquests",
-      items: [
-        { text: "Daddy's Home", done: false },
-        { text: "Varrock Museum Quiz", done: false },
+      stacked: true,
+      sections: [
+        {
+          id: "crafting", title: "Crafting Goals", trackTotal: false,
+          items: [
+            { text: "Rings of Dueling", done: false },
+            { text: "Games Necklaces", done: false },
+          ]
+        },
+        {
+          id: "miniquests", title: "Miniquests", trackTotal: false,
+          items: [
+            { text: "Daddy's Home", done: false },
+            { text: "Varrock Museum Quiz", done: false },
+          ]
+        },
+        {
+          id: "bossing", title: "Bossing", trackTotal: false,
+          items: [
+            { text: "Brutus (cow boss)", done: false },
+          ]
+        },
       ]
     },
   ];
@@ -310,25 +384,42 @@
 
   function renderSection(section) {
     const state = getState(section.id);
-
     const pending = section.items.filter(item => !item.done);
-    const completed = section.items.filter(item => item.done);
+    const done    = section.items.filter(item => item.done);
 
-    // Progress counts only pending items (done ones are already off the board)
-    const checkedCount = pending.filter((item, i) => state[i]).length;
+    // Progress calculation
+    const checkedPending = pending.filter((_, i) => state[i]).length;
+    let progressText;
+    if (section.trackTotal) {
+      const totalAll    = section.items.length;
+      const totalDone   = done.length + checkedPending;
+      progressText = `${totalDone}/${totalAll}`;
+    } else {
+      progressText = `${checkedPending}/${pending.length}`;
+    }
 
     const el = document.createElement("div");
     el.className = "section";
     el.innerHTML = `
       <h2>${section.title}</h2>
-      <div class="progress"><span>${checkedCount}/${pending.length}</span> complete</div>
+      <div class="progress"><span>${progressText}</span> complete</div>
       <div class="items"></div>
     `;
 
-    const itemsEl = el.querySelector(".items");
+    const itemsEl   = el.querySelector(".items");
     const progressEl = el.querySelector(".progress span");
 
-    // Render pending items
+    function updateProgress() {
+      const s = getState(section.id);
+      const checked = pending.filter((_, i) => s[i]).length;
+      if (section.trackTotal) {
+        progressEl.textContent = `${done.length + checked}/${section.items.length}`;
+      } else {
+        progressEl.textContent = `${checked}/${pending.length}`;
+      }
+    }
+
+    // Pending items
     pending.forEach((item, i) => {
       const row = document.createElement("div");
       row.className = "item";
@@ -346,8 +437,7 @@
         const s = getState(section.id);
         s[i] = cb.checked;
         saveState(section.id, s);
-        const total = pending.filter((_, j) => getState(section.id)[j]).length;
-        progressEl.textContent = `${total}/${pending.length}`;
+        updateProgress();
       });
 
       row.appendChild(cb);
@@ -355,14 +445,14 @@
       itemsEl.appendChild(row);
     });
 
-    // Render completed items under a divider
-    if (completed.length > 0) {
+    // Done items under gold divider
+    if (done.length > 0) {
       const divider = document.createElement("div");
       divider.className = "completed-divider";
       divider.textContent = "Completed";
       itemsEl.appendChild(divider);
 
-      completed.forEach((item, i) => {
+      done.forEach((item, i) => {
         const row = document.createElement("div");
         row.className = "item done";
 
@@ -370,7 +460,7 @@
         cb.type = "checkbox";
         cb.id = `${section.id}-done-${i}`;
         cb.checked = true;
-        cb.addEventListener("click", e => e.preventDefault()); // non-interactive
+        cb.addEventListener("click", e => e.preventDefault());
 
         const label = document.createElement("label");
         label.htmlFor = cb.id;
@@ -385,8 +475,17 @@
     return el;
   }
 
-  const app = document.getElementById("app");
-  data.forEach(section => app.appendChild(renderSection(section)));
+  function renderApp() {
+    const app = document.getElementById("app");
+    columns.forEach(col => {
+      const group = document.createElement("div");
+      group.className = col.stacked ? "col-group stacked" : "col-group single";
+      col.sections.forEach(section => group.appendChild(renderSection(section)));
+      app.appendChild(group);
+    });
+  }
+
+  renderApp();
 </script>
 
 </body>
