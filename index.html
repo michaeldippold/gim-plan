@@ -71,7 +71,7 @@
     /* ── Grid ── */
     .columns {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: 1fr 1fr 1.8fr 0.75fr 0.6fr;
       gap: 24px;
       flex: 1;
       min-height: 0;
@@ -219,7 +219,8 @@
       transition: color 0.15s, text-decoration 0.15s;
     }
 
-    .item input[type="checkbox"]:checked + label {
+    /* ~ instead of + so icons between checkbox and label don't break the selector */
+    .item input[type="checkbox"]:checked ~ label {
       color: #4a4d6a;
       text-decoration: line-through;
     }
@@ -262,21 +263,35 @@
 
     .item.done .skill-icon { opacity: 0.4; }
 
-    /* Priority star */
+    /* Priority star — sits at far right end of the row */
     .priority-mark {
       color: #8b80d0;
-      font-size: 0.8em;
-      margin-right: 1px;
+      font-size: 0.65em;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    /* ── Two-column items grid (skills) ── */
+    .items.two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 8px;
+      align-content: start;
+    }
+
+    .items.two-col .completed-divider {
+      grid-column: 1 / -1;
     }
 
     /* ── Mobile: unlock everything and stack naturally ── */
     @media (max-width: 630px) {
       html, body { height: auto; overflow: auto; }
       body { display: block; }
-      .columns { min-height: unset; }
+      .columns { grid-template-columns: 1fr; min-height: unset; }
       .col-group, .col-group.single, .col-group.stacked { overflow-y: visible; min-height: unset; }
       .section, .col-group.single .section { flex: none; min-height: unset; display: block; }
       .items, .col-group.stacked .items { overflow-y: visible; flex: none; min-height: unset; }
+      .items.two-col { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -348,27 +363,27 @@
     {
       sections: [
         {
-          id: "skills", title: "Base 30 Skills", trackTotal: true,
+          id: "skills", title: "Base 30 Skills", trackTotal: true, twoCol: true,
           items: [
-            { text: "Crafting",     done: false, priority: true, icon: "Crafting"     },
-            { text: "Magic",        done: false, priority: true, icon: "Magic"        },
             { text: "Attack",       done: false, icon: "Attack"       },
+            { text: "Strength",     done: false, icon: "Strength"     },
+            { text: "Defence",      done: false, icon: "Defence"      },
+            { text: "Ranged",       done: false, icon: "Ranged"       },
+            { text: "Prayer",       done: false, icon: "Prayer"       },
+            { text: "Magic",        done: false, priority: true, icon: "Magic"        },
+            { text: "Crafting",     done: false, priority: true, icon: "Crafting"     },
             { text: "Hitpoints",    done: false, icon: "Hitpoints"    },
             { text: "Mining",       done: false, icon: "Mining"       },
-            { text: "Strength",     done: false, icon: "Strength"     },
             { text: "Agility",      done: false, icon: "Agility"      },
             { text: "Smithing",     done: false, icon: "Smithing"     },
-            { text: "Defence",      done: false, icon: "Defence"      },
             { text: "Herblore",     done: false, icon: "Herblore"     },
             { text: "Fishing",      done: false, icon: "Fishing"      },
-            { text: "Ranged",       done: false, icon: "Ranged"       },
             { text: "Thieving",     done: false, icon: "Thieving"     },
             { text: "Cooking",      done: false, icon: "Cooking"      },
-            { text: "Prayer",       done: false, icon: "Prayer"       },
             { text: "Firemaking",   done: false, icon: "Firemaking"   },
             { text: "Fletching",    done: false, icon: "Fletching"    },
             { text: "Woodcutting",  done: false, icon: "Woodcutting"  },
-            { text: "Runecrafting", done: false, icon: "Runecrafting" },
+            { text: "Runecrafting", done: false, icon: "Runecraft"    },
             { text: "Slayer",       done: false, icon: "Slayer"       },
             { text: "Farming",      done: false, icon: "Farming"      },
             { text: "Construction", done: false, icon: "Construction" },
@@ -454,6 +469,8 @@
     const itemsEl   = el.querySelector(".items");
     const progressEl = el.querySelector(".progress span");
 
+    if (section.twoCol) itemsEl.classList.add("two-col");
+
     function updateProgress() {
       const s = getState(section.id);
       const checked = pending.filter((_, i) => s[i]).length;
@@ -464,53 +481,50 @@
       }
     }
 
-    function makeIcon(item) {
-      if (!item.icon) return null;
-      const img = document.createElement("img");
-      img.src = `https://oldschool.runescape.wiki/images/${item.icon}_icon.png`;
-      img.className = "skill-icon";
-      img.alt = "";
-      img.onerror = () => { img.style.display = "none"; };
-      return img;
-    }
+    function makeRow(item, cb, isDone) {
+      const row = document.createElement("div");
+      row.className = isDone ? "item done" : "item";
 
-    function makeLabel(item, forId) {
+      row.appendChild(cb);
+
+      if (item.icon) {
+        const img = document.createElement("img");
+        img.src = `https://oldschool.runescape.wiki/images/${item.icon}_icon.png`;
+        img.className = "skill-icon";
+        img.alt = "";
+        img.onerror = () => { img.style.display = "none"; };
+        row.appendChild(img);
+      }
+
       const label = document.createElement("label");
-      label.htmlFor = forId;
+      label.htmlFor = cb.id;
+      label.textContent = item.text;
+      row.appendChild(label);
+
+      // Star goes at the far right, outside the label, so it never affects text indent
       if (item.priority) {
         const star = document.createElement("span");
         star.className = "priority-mark";
-        star.textContent = "★ ";
-        label.appendChild(star);
-        label.appendChild(document.createTextNode(item.text));
-      } else {
-        label.textContent = item.text;
+        star.textContent = "★";
+        row.appendChild(star);
       }
-      return label;
+
+      return row;
     }
 
     // Pending items
     pending.forEach((item, i) => {
-      const row = document.createElement("div");
-      row.className = "item";
-
       const cb = document.createElement("input");
       cb.type = "checkbox";
       cb.id = `${section.id}-${i}`;
       cb.checked = !!state[i];
-
       cb.addEventListener("change", () => {
         const s = getState(section.id);
         s[i] = cb.checked;
         saveState(section.id, s);
         updateProgress();
       });
-
-      row.appendChild(cb);
-      const icon = makeIcon(item);
-      if (icon) row.appendChild(icon);
-      row.appendChild(makeLabel(item, cb.id));
-      itemsEl.appendChild(row);
+      itemsEl.appendChild(makeRow(item, cb, false));
     });
 
     // Done items under gold divider
@@ -521,20 +535,12 @@
       itemsEl.appendChild(divider);
 
       done.forEach((item, i) => {
-        const row = document.createElement("div");
-        row.className = "item done";
-
         const cb = document.createElement("input");
         cb.type = "checkbox";
         cb.id = `${section.id}-done-${i}`;
         cb.checked = true;
         cb.addEventListener("click", e => e.preventDefault());
-
-        row.appendChild(cb);
-        const icon = makeIcon(item);
-        if (icon) row.appendChild(icon);
-        row.appendChild(makeLabel(item, cb.id));
-        itemsEl.appendChild(row);
+        itemsEl.appendChild(makeRow(item, cb, true));
       });
     }
 
