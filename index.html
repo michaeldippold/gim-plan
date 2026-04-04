@@ -126,7 +126,7 @@
     /* ── Grid ── */
     .columns {
       display: grid;
-      grid-template-columns: 1fr 1fr 1.8fr 0.75fr 0.6fr;
+      grid-template-columns: 1fr 1.6fr 1fr 0.80fr 0.75fr;
       gap: 24px;
       flex: 1;
       min-height: 0;
@@ -340,14 +340,24 @@
       grid-column: 1 / -1;
     }
 
-    /* ── Mobile: unlock everything and stack naturally ── */
-    @media (max-width: 630px) {
+    /* ── 4 columns: stacked drops to row 2, page scrolls ── */
+    @media (max-width: 1200px) {
       html, body { height: auto; overflow: auto; }
       body { display: block; }
-      .columns { grid-template-columns: 1fr; min-height: unset; }
+      .columns { grid-template-columns: 1fr 1.6fr 1fr 0.80fr; min-height: unset; }
       .col-group, .col-group.single, .col-group.stacked { overflow-y: visible; min-height: unset; }
       .section, .col-group.single .section { flex: none; min-height: unset; display: block; }
       .items, .col-group.stacked .items { overflow-y: visible; flex: none; min-height: unset; }
+    }
+
+    /* ── 3 columns: gear + stacked both drop ── */
+    @media (max-width: 900px) {
+      .columns { grid-template-columns: 1fr 1.6fr 1fr; }
+    }
+
+    /* ── Mobile: single column ── */
+    @media (max-width: 630px) {
+      .columns { grid-template-columns: 1fr; }
       .items.two-col { grid-template-columns: 1fr; }
     }
   </style>
@@ -416,22 +426,6 @@
     {
       sections: [
         {
-          id: "diaries", title: "Achievement Diaries", trackTotal: true,
-          items: [
-            { text: "Ardougne Easy (transport)", done: true },
-            { text: "Ardougne Medium", done: false },
-            { text: "Varrock Easy (mining armor)", done: false },
-            { text: "Varrock Medium", done: false },
-            { text: "Falador Easy", done: false },
-            { text: "Falador Medium", done: false },
-            { text: "Morytania Easy", done: false },
-          ]
-        }
-      ]
-    },
-    {
-      sections: [
-        {
           id: "skills", title: "Base 30 Skills", trackTotal: true, twoCol: true,
           items: [
             { text: "Attack",       done: false, icon: "Attack"       },
@@ -457,6 +451,22 @@
             { text: "Farming",      done: false, icon: "Farming"      },
             { text: "Construction", done: false, icon: "Construction" },
             { text: "Hunter",       done: false, icon: "Hunter"       },
+          ]
+        }
+      ]
+    },
+    {
+      sections: [
+        {
+          id: "diaries", title: "Achievement Diaries", trackTotal: true,
+          items: [
+            { text: "Ardougne Easy (transport)", done: true },
+            { text: "Ardougne Medium", done: false },
+            { text: "Varrock Easy (mining armor)", done: false },
+            { text: "Varrock Medium", done: false },
+            { text: "Falador Easy", done: false },
+            { text: "Falador Medium", done: false },
+            { text: "Morytania Easy", done: false },
           ]
         }
       ]
