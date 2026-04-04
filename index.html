@@ -250,6 +250,25 @@
       cursor: default;
     }
 
+    /* Skill icons */
+    .skill-icon {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      image-rendering: pixelated;
+    }
+
+    .item.done .skill-icon { opacity: 0.4; }
+
+    /* Priority star */
+    .priority-mark {
+      color: #8b80d0;
+      font-size: 0.8em;
+      margin-right: 1px;
+    }
+
     /* ── Mobile: unlock everything and stack naturally ── */
     @media (max-width: 630px) {
       html, body { height: auto; overflow: auto; }
@@ -329,10 +348,31 @@
     {
       sections: [
         {
-          id: "skills", title: "Skill Goals", trackTotal: true,
+          id: "skills", title: "Base 30 Skills", trackTotal: true,
           items: [
-            { text: "Crafting 30", done: false },
-            { text: "Magic 30", done: false },
+            { text: "Crafting",     done: false, priority: true, icon: "Crafting"     },
+            { text: "Magic",        done: false, priority: true, icon: "Magic"        },
+            { text: "Attack",       done: false, icon: "Attack"       },
+            { text: "Hitpoints",    done: false, icon: "Hitpoints"    },
+            { text: "Mining",       done: false, icon: "Mining"       },
+            { text: "Strength",     done: false, icon: "Strength"     },
+            { text: "Agility",      done: false, icon: "Agility"      },
+            { text: "Smithing",     done: false, icon: "Smithing"     },
+            { text: "Defence",      done: false, icon: "Defence"      },
+            { text: "Herblore",     done: false, icon: "Herblore"     },
+            { text: "Fishing",      done: false, icon: "Fishing"      },
+            { text: "Ranged",       done: false, icon: "Ranged"       },
+            { text: "Thieving",     done: false, icon: "Thieving"     },
+            { text: "Cooking",      done: false, icon: "Cooking"      },
+            { text: "Prayer",       done: false, icon: "Prayer"       },
+            { text: "Firemaking",   done: false, icon: "Firemaking"   },
+            { text: "Fletching",    done: false, icon: "Fletching"    },
+            { text: "Woodcutting",  done: false, icon: "Woodcutting"  },
+            { text: "Runecrafting", done: false, icon: "Runecrafting" },
+            { text: "Slayer",       done: false, icon: "Slayer"       },
+            { text: "Farming",      done: false, icon: "Farming"      },
+            { text: "Construction", done: false, icon: "Construction" },
+            { text: "Hunter",       done: false, icon: "Hunter"       },
           ]
         }
       ]
@@ -424,6 +464,31 @@
       }
     }
 
+    function makeIcon(item) {
+      if (!item.icon) return null;
+      const img = document.createElement("img");
+      img.src = `https://oldschool.runescape.wiki/images/${item.icon}_icon.png`;
+      img.className = "skill-icon";
+      img.alt = "";
+      img.onerror = () => { img.style.display = "none"; };
+      return img;
+    }
+
+    function makeLabel(item, forId) {
+      const label = document.createElement("label");
+      label.htmlFor = forId;
+      if (item.priority) {
+        const star = document.createElement("span");
+        star.className = "priority-mark";
+        star.textContent = "★ ";
+        label.appendChild(star);
+        label.appendChild(document.createTextNode(item.text));
+      } else {
+        label.textContent = item.text;
+      }
+      return label;
+    }
+
     // Pending items
     pending.forEach((item, i) => {
       const row = document.createElement("div");
@@ -434,10 +499,6 @@
       cb.id = `${section.id}-${i}`;
       cb.checked = !!state[i];
 
-      const label = document.createElement("label");
-      label.htmlFor = cb.id;
-      label.textContent = item.text;
-
       cb.addEventListener("change", () => {
         const s = getState(section.id);
         s[i] = cb.checked;
@@ -446,7 +507,9 @@
       });
 
       row.appendChild(cb);
-      row.appendChild(label);
+      const icon = makeIcon(item);
+      if (icon) row.appendChild(icon);
+      row.appendChild(makeLabel(item, cb.id));
       itemsEl.appendChild(row);
     });
 
@@ -467,12 +530,10 @@
         cb.checked = true;
         cb.addEventListener("click", e => e.preventDefault());
 
-        const label = document.createElement("label");
-        label.htmlFor = cb.id;
-        label.textContent = item.text;
-
         row.appendChild(cb);
-        row.appendChild(label);
+        const icon = makeIcon(item);
+        if (icon) row.appendChild(icon);
+        row.appendChild(makeLabel(item, cb.id));
         itemsEl.appendChild(row);
       });
     }
