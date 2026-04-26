@@ -585,7 +585,7 @@
     function makeRow(item, cb, isDone) {
       const row = document.createElement("div");
       const base = isDone ? "item done" : "item";
-      row.className = item.priority ? base + " priority" : base;
+      row.className = (item.priority && !isDone) ? base + " priority" : base;
 
       row.appendChild(cb);
 
